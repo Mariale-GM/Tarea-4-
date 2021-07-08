@@ -1,0 +1,18 @@
+---
+title: "Orquídeas en Costa Rica"
+output: html_document
+---
+
+# Carga de paquetes
+
+```{r, message= FALSE, warning=FALSE}
+library(sf)
+library(raster)
+library(dplyr)
+library(spData)
+
+library(leaflet)
+library(plotly)
+library(DT)
+```
+
