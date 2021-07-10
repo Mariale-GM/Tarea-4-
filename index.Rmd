@@ -16,3 +16,86 @@ library(plotly)
 library(DT)
 ```
 
+
+# Carga de datos 
+
+```{r}
+# *carga de los registros de presencia de las orquídeas*
+
+familia_Orchidaceae <- st_read("https://raw.githubusercontent.com/gf0604-procesamientodatosgeograficos/2021i-datos/main/gbif/orchidaceae-cr-registros.csv",
+                              options = c(
+      "X_POSSIBLE_NAMES=decimalLongitude",
+      "Y_POSSIBLE_NAMES=decimalLatitude"
+    ),
+    quiet = TRUE
+   )
+
+# *asignacion del sistema de coordenadas*
+st_crs(familia_Orchidaceae) = 4326
+```
+
+
+```{r}
+# *carga de las áreas silvestres protegidas*
+
+ASP <- st_read("https://raw.githubusercontent.com/gf0604-procesamientodatosgeograficos/2021i-datos/main/sinac/asp/asp-wgs84.geojson",
+               quiet = TRUE)
+```
+
+# **a. Eliminar los registros con valor mayor a 1000 en los datos de presencia**
+
+## Cantidad original: **29863**
+
+```{r}
+# *Descarte de datos con alta incertidumbre* 
+
+familia_Orchidaceae <- 
+  familia_Orchidaceae %>%
+  filter(!is.na(coordinateUncertaintyInMeters) & coordinateUncertaintyInMeters < 1000) 
+
+
+cat("Cantidad de registros después de descartar los de alta incertidumbre", nrow(familia_Orchidaceae))
+```
+
+## Cantidad de registros después de descartar los valores mayor a 1000 : **28406**
+
+
+# **b. Elimiar los NA del campo *specie* en los registros de presencia**
+
+
+```{r}
+# *Descartar registros con species = NA
+
+familia_Orchidaceae <- 
+  familia_Orchidaceae %>%
+  filter(!is.na(species))
+
+cat("Cantidad de espacios luego de elimiar los NA:", nrow(familia_Orchidaceae))
+
+```
+
+
+# **c. Eliminar los valores del *Área Marina de Manejo* y *area marina protegida* del conjunto de datos ASP**
+
+
+```{r}
+
+ASP <-
+  ASP %>%
+  filter(!is.na(descripcio) & descripcio != "Area marina protegida")
+
+
+```
+
+
+```{r}
+
+ASP <-
+  ASP %>%
+  filter(!is.na(descripcio) & descripcio != "Area Marina de Manejo")
+
+
+```
+
+
+

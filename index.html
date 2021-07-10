@@ -179,6 +179,63 @@ library(leaflet)
 library(plotly)
 library(DT)</code></pre>
 </div>
+<div id="carga-de-datos" class="section level1">
+<h1>Carga de datos</h1>
+<pre class="r"><code># *carga de los registros de presencia de las orquídeas*
+
+familia_Orchidaceae &lt;- st_read(&quot;https://raw.githubusercontent.com/gf0604-procesamientodatosgeograficos/2021i-datos/main/gbif/orchidaceae-cr-registros.csv&quot;,
+                              options = c(
+      &quot;X_POSSIBLE_NAMES=decimalLongitude&quot;,
+      &quot;Y_POSSIBLE_NAMES=decimalLatitude&quot;
+    ),
+    quiet = TRUE
+   )
+
+# *asignacion del sistema de coordenadas*
+st_crs(familia_Orchidaceae) = 4326</code></pre>
+<pre class="r"><code># *carga de las áreas silvestres protegidas*
+
+ASP &lt;- st_read(&quot;https://raw.githubusercontent.com/gf0604-procesamientodatosgeograficos/2021i-datos/main/sinac/asp/asp-wgs84.geojson&quot;,
+               quiet = TRUE)</code></pre>
+</div>
+<div id="a.-eliminar-los-registros-con-valor-mayor-a-1000-en-los-datos-de-presencia" class="section level1">
+<h1><strong>a. Eliminar los registros con valor mayor a 1000 en los datos de presencia</strong></h1>
+<div id="cantidad-original-29863" class="section level2">
+<h2>Cantidad original: <strong>29863</strong></h2>
+<pre class="r"><code># *Descarte de datos con alta incertidumbre* 
+
+familia_Orchidaceae &lt;- 
+  familia_Orchidaceae %&gt;%
+  filter(!is.na(coordinateUncertaintyInMeters) &amp; coordinateUncertaintyInMeters &lt; 1000) 
+
+
+cat(&quot;Cantidad de registros después de descartar los de alta incertidumbre&quot;, nrow(familia_Orchidaceae))</code></pre>
+<pre><code>## Cantidad de registros después de descartar los de alta incertidumbre 28406</code></pre>
+</div>
+<div id="cantidad-de-registros-después-de-descartar-los-valores-mayor-a-1000-28406" class="section level2">
+<h2>Cantidad de registros después de descartar los valores mayor a 1000 : <strong>28406</strong></h2>
+</div>
+</div>
+<div id="b.-elimiar-los-na-del-campo-specie-en-los-registros-de-presencia" class="section level1">
+<h1><strong>b. Elimiar los NA del campo <em>specie</em> en los registros de presencia</strong></h1>
+<pre class="r"><code># *Descartar registros con species = NA
+
+familia_Orchidaceae &lt;- 
+  familia_Orchidaceae %&gt;%
+  filter(!is.na(species))
+
+cat(&quot;Cantidad de espacios luego de elimiar los NA:&quot;, nrow(familia_Orchidaceae))</code></pre>
+<pre><code>## Cantidad de espacios luego de elimiar los NA: 28406</code></pre>
+</div>
+<div id="c.-eliminar-los-valores-del-área-marina-de-manejo-y-area-marina-protegida-del-conjunto-de-datos-asp" class="section level1">
+<h1><strong>c. Eliminar los valores del <em>Área Marina de Manejo</em> y <em>area marina protegida</em> del conjunto de datos ASP</strong></h1>
+<pre class="r"><code>ASP &lt;-
+  ASP %&gt;%
+  filter(!is.na(descripcio) &amp; descripcio != &quot;Area marina protegida&quot;)</code></pre>
+<pre class="r"><code>ASP &lt;-
+  ASP %&gt;%
+  filter(!is.na(descripcio) &amp; descripcio != &quot;Area Marina de Manejo&quot;)</code></pre>
+</div>
 
 
 
