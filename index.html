@@ -198,8 +198,8 @@ st_crs(familia_Orchidaceae) = 4326</code></pre>
 ASP &lt;- st_read(&quot;https://raw.githubusercontent.com/gf0604-procesamientodatosgeograficos/2021i-datos/main/sinac/asp/asp-wgs84.geojson&quot;,
                quiet = TRUE)</code></pre>
 </div>
-<div id="a.-eliminar-los-registros-con-valor-mayor-a-1000-en-los-datos-de-presencia" class="section level1">
-<h1><strong>a. Eliminar los registros con valor mayor a 1000 en los datos de presencia</strong></h1>
+<div id="eliminar-los-registros-con-valor-mayor-a-1000-en-los-datos-de-presencia" class="section level1">
+<h1><strong>1. Eliminar los registros con valor mayor a 1000 en los datos de presencia</strong></h1>
 <div id="cantidad-original-29863" class="section level2">
 <h2>Cantidad original: <strong>29863</strong></h2>
 <pre class="r"><code># *Descarte de datos con alta incertidumbre* 
@@ -216,8 +216,8 @@ cat(&quot;Cantidad de registros después de descartar los de alta incertidumbre&
 <h2>Cantidad de registros después de descartar los valores mayor a 1000 : <strong>28406</strong></h2>
 </div>
 </div>
-<div id="b.-elimiar-los-na-del-campo-specie-en-los-registros-de-presencia" class="section level1">
-<h1><strong>b. Elimiar los NA del campo <em>specie</em> en los registros de presencia</strong></h1>
+<div id="elimiar-los-na-del-campo-specie-en-los-registros-de-presencia" class="section level1">
+<h1><strong>2. Elimiar los NA del campo <em>specie</em> en los registros de presencia</strong></h1>
 <pre class="r"><code># *Descartar registros con species = NA
 
 familia_Orchidaceae &lt;- 
@@ -227,14 +227,18 @@ familia_Orchidaceae &lt;-
 cat(&quot;Cantidad de espacios luego de elimiar los NA:&quot;, nrow(familia_Orchidaceae))</code></pre>
 <pre><code>## Cantidad de espacios luego de elimiar los NA: 28406</code></pre>
 </div>
-<div id="c.-eliminar-los-valores-del-área-marina-de-manejo-y-area-marina-protegida-del-conjunto-de-datos-asp" class="section level1">
-<h1><strong>c. Eliminar los valores del <em>Área Marina de Manejo</em> y <em>area marina protegida</em> del conjunto de datos ASP</strong></h1>
+<div id="eliminar-los-valores-del-área-marina-de-manejo-y-area-marina-protegida-del-conjunto-de-datos-asp" class="section level1">
+<h1><strong>3. Eliminar los valores del <em>Área Marina de Manejo</em> y <em>area marina protegida</em> del conjunto de datos ASP</strong></h1>
 <pre class="r"><code>ASP &lt;-
   ASP %&gt;%
   filter(!is.na(descripcio) &amp; descripcio != &quot;Area marina protegida&quot;)</code></pre>
 <pre class="r"><code>ASP &lt;-
   ASP %&gt;%
   filter(!is.na(descripcio) &amp; descripcio != &quot;Area Marina de Manejo&quot;)</code></pre>
+</div>
+<div id="mapa-leaflet" class="section level1">
+<h1>Mapa Leaflet</h1>
+<pre class="r"><code># **Creación de conjunto de datos con la cantidad de registros por área protegida**</code></pre>
 </div>
 
 
