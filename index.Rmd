@@ -30,8 +30,7 @@ familia_Orchidaceae <- st_read("https://raw.githubusercontent.com/gf0604-procesa
     quiet = TRUE
    )
 
-# *asignacion del sistema de coordenadas*
-st_crs(familia_Orchidaceae) = 4326
+
 ```
 
 
@@ -41,6 +40,14 @@ st_crs(familia_Orchidaceae) = 4326
 ASP <- st_read("https://raw.githubusercontent.com/gf0604-procesamientodatosgeograficos/2021i-datos/main/sinac/asp/asp-wgs84.geojson",
                quiet = TRUE)
 ```
+
+```{r}
+# **Asignación del sistema de coordenadas**
+
+st_crs(ASP) = 4326
+st_crs(familia_Orchidaceae) = 4326
+```
+
 
 # **1. Eliminar los registros con valor mayor a 1000 en los datos de presencia**
 
@@ -92,13 +99,77 @@ ASP <-
 ```
 
 
-# Mapa Leaflet 
+# *Mapa Leaflet*
+
 
 ```{r}
-# **Creación de conjunto de datos con la cantidad de registros por área protegida**
+# *Creación de conjunto de datos con la cantidad de registros por área protegida*
+
+ASP_registros <-
+  ASP %>%
+  st_join(familia_Orchidaceae) %>%
+  group_by(nombre_asp) %>%
+  summarize(especies = n_distinct(species,na.rm = TRUE)) 
+```
+
+```{r}
+# *Paleta de colores*
+
+colores_registros <-
+  colorNumeric(palette = "PiYG",
+               domain = ASP_registros$especies,
+               na.color = "transparent")
+
+
+# *Paleta de colores*
+colores_especies <-
+  colorNumeric(palette = "PRGn",
+               domain = ASP_registros$especies,
+               na.color = "transparent")
+
+
+
+# *Mapa Leaflet*
+
+leaflet() %>%
+  addTiles(group = "OSM") %>%
+  addPolygons(
+    data = ASP_registros,
+    fillColor = ~ colores_especies(ASP_registros$especies),
+    fillOpacity = 0.7,
+    stroke = TRUE,
+    color = "black",
+    weight = 1,
+    popup = paste(
+      paste(
+        "<strong>Provincia:</strong>",
+        ASP_registros$nombre_asp
+      ),
+      paste(
+        "<strong>Cantidad de especies:</strong>",
+        ASP_registros$especies
+        
+      ),
+      sep = '<br/>'
+    ),
+    group = "Provincias - especies"
+  ) %>%
+  addLayersControl(baseGroups = c("OSM"),
+                   overlayGroups = c("Provincias - especies")) %>%
+  addLegend(
+    position = "bottomleft",
+    pal = colores_especies,
+    values = ASP_registros$especies,
+    group = "Provincias - especies",
+    title = "Cantidad de orquídeas por Área Silvestre Protegida")      
+
+
+
 
 
 ```
+
+
 
 
 
